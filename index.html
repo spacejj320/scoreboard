@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Tournament Score Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0a0a0a;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #FED941; /* Bright yellow for visibility */
+            margin: 20px;
+        }
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            font-size: 24px; /* Larger font size for visibility */
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 10px 20px;
+            color: #fff;
+        }
+        th {
+            background-color: #333;
+        }
+        td {
+            background-color: #222;
+        }
+        input {
+            font-size: 20px;
+            padding: 5px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            text-align: center;
+            width: 100%;
+        }
+        button {
+            font-size: 7px;
+            padding: 10px 20px;
+            background-color: #FED941; /* Bright yellow for contrast */
+            color: #0a0a0a;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        button:hover {
+            background-color: #fff;
+            color: #222;
+        }
+        .main-th th {
+            font-size: 16px;
+        }
+        td {
+            font-size: 16px;
+            text-align: left;
+        }
+        tbody tr {
+            counter-increment: rowNumber; /* Increment the counter for each row */
+        }
+        tbody tr td:first-child::before {
+            content: counter(rowNumber); /* Display the counter */
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        tbody tr:nth-child(1) {
+    background-color: #FFD700; /* Gold for the 1st place team */
+    color: #0a0a0a; /* Dark text for better contrast */
+}
+
+tbody tr:nth-child(2) {
+    background-color: #C0C0C0; /* Silver for the 2nd place team */
+    color: #0a0a0a;
+}
+
+tbody tr:nth-child(3) {
+    background-color: #CD7F32; /* Bronze for the 3rd place team */
+    color: #0a0a0a;
+}
+
+tbody tr:nth-child(4) {
+    background-color: #4CAF50; /* Green for the 4th place team */
+    color: #ffffff; /* Keeping white text for contrast */
+}
+
+    </style>
+</head>
+<body>
+    <h1>NPL Season-4 Score Table</h1>
+   <div style="    display: flex;
+   justify-content: end;
+   margin-right: 61px;"> <button onclick="sortTable()">Sort Table</button></div>
+    <table border="1" id="scoreTable">
+        <thead>
+            <tr class="main-th">
+                <th>Team Name</th>
+                <th>M</th>
+                <th>W</th>
+                <th>L</th>
+                <th>D</th>
+                <th>GD</th>
+                <th>Points</th>
+                <th>Save</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <script>
+        const teams = [
+            'Brigadiers FC', 'Sanam FC', 'Bakesa FC', 'Faaz FC', 'Khobar FC',
+            'Pedox FC', 'Mastercoat FC', 'Firewing', 'KK Furniture', 'GreekMen FC',
+            'WonderHome FC', 'Loft FC'
+        ];
+    
+        function saveTeam(row, name) {
+            const matches = parseInt(row.cells[1].children[0].value);
+            const won = parseInt(row.cells[2].children[0].value);
+            const lost = parseInt(row.cells[3].children[0].value);
+            const draw = parseInt(row.cells[4].children[0].value);
+            const goalDifference = parseInt(row.cells[5].children[0].value);
+            const points = won * 3 + draw; // Automatically calculate points
+            row.cells[6].children[0].value = points; // Update points field in the row
+    
+            const teamData = JSON.parse(localStorage.getItem('teams')) || {};
+            teamData[name] = { matches, won, lost, draw, goalDifference, points };
+            localStorage.setItem('teams', JSON.stringify(teamData));
+            // Removed alert for a cleaner experience
+        }
+    
+        function addEventListenersToRow(row) {
+            Array.from(row.getElementsByTagName('input')).forEach(input => {
+                input.addEventListener('keypress', function(event) {
+                    if (event.key === "Enter") {
+                        event.preventDefault(); // Prevent the default Enter key behavior
+                        saveTeam(row, row.cells[0].textContent); // Save the data when Enter is pressed
+                    }
+                });
+            });
+        }
+    
+        function displayTeams() {
+            const storedTeams = JSON.parse(localStorage.getItem('teams')) || {};
+            const tbody = document.getElementById('scoreTable').getElementsByTagName('tbody')[0];
+            tbody.innerHTML = '';
+            teams.forEach(team => {
+                const data = storedTeams[team] || { matches: 0, won: 0, lost: 0, draw: 0, goalDifference: 0, points: 0 };
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = team;
+                Object.values(data).forEach((value, index) => {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.value = value;
+                    row.insertCell(index + 1).appendChild(input);
+                });
+                const saveBtn = document.createElement('button');
+                saveBtn.textContent = 'Save';
+                saveBtn.onclick = function() { saveTeam(row, team); };
+                row.insertCell(7).appendChild(saveBtn);
+                addEventListenersToRow(row); // Attach Enter key listener
+            });
+        }
+    
+        function sortTable() {
+            const tbody = document.getElementById('scoreTable').getElementsByTagName('tbody')[0];
+            const rows = Array.from(tbody.rows);
+    
+            rows.sort((a, b) => {
+                const pointsA = parseInt(a.cells[6].children[0].value);
+                const goalDifferenceA = parseInt(a.cells[5].children[0].value);
+                const pointsB = parseInt(b.cells[6].children[0].value);
+                const goalDifferenceB = parseInt(b.cells[5].children[0].value);
+                return pointsB - pointsA || goalDifferenceB - goalDifferenceA;
+            });
+    
+            while (tbody.firstChild) {
+                tbody.removeChild(tbody.firstChild);
+            }
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    
+        window.onload = displayTeams;
+    </script>
+    
+</body>
+</html>
