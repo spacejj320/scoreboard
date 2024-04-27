@@ -80,24 +80,24 @@
             margin-right: 10px;
             font-weight: bold;
         }
-        tbody tr:nth-child(1) {
-    background-color: #FFD700; /* Gold for the 1st place team */
-    color: #0a0a0a; /* Dark text for better contrast */
+      /* Target the first <td> of the first row */
+tr:nth-child(1) td:first-child {
+    border-left: 9px solid green;
 }
 
-tbody tr:nth-child(2) {
-    background-color: #C0C0C0; /* Silver for the 2nd place team */
-    color: #0a0a0a;
+/* Target the first <td> of the second row */
+tr:nth-child(2) td:first-child {
+    border-left: 9px solid blue;
 }
 
-tbody tr:nth-child(3) {
-    background-color: #CD7F32; /* Bronze for the 3rd place team */
-    color: #0a0a0a;
+/* Target the first <td> of the third row */
+tr:nth-child(3) td:first-child {
+    border-left: 9px solid orange;
 }
 
-tbody tr:nth-child(4) {
-    background-color: #4CAF50; /* Green for the 4th place team */
-    color: #ffffff; /* Keeping white text for contrast */
+/* Target the first <td> of the fourth row */
+tr:nth-child(4) td:first-child {
+    border-left: 9px solid purple;
 }
 
     </style>
